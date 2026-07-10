@@ -1,91 +1,90 @@
-# GitHub Upload Guide
+# Update the Existing GitHub Repository
 
-Recommended repository name:
-
-```text
-ai-email-action-automation
-```
-
-## Before uploading
-
-Make sure these files are present:
+This upgraded package is intended for the existing repository:
 
 ```text
-README.md
-LICENSE
-requirements.txt
-dashboard/requirements.txt
-app/
-dashboard/
-tests/
-docs/screenshots/
-.github/workflows/tests.yml
-setup_windows.bat
-start_backend.bat
-start_dashboard.bat
+https://github.com/SAHARIARSHOWMIK/ai-email-action-automation
 ```
 
-Do not upload `.venv`, `.env`, `app.db`, `token.json`, or any real credentials. They are already covered by `.gitignore`.
+Do **not** create a second GitHub repository.
 
-## Upload using Git commands
+## Recommended method: fresh clone, replace, commit, push
 
-Open PowerShell inside the project folder and run:
+This method preserves all existing GitHub history while avoiding mistakes in an older local folder.
+
+### 1. Extract the upgraded ZIP
+
+Extract it to:
+
+```text
+C:\Users\showmik\Downloads\ai-email-action-automation-upgraded-final
+```
+
+### 2. Clone the existing repository into a temporary update folder
 
 ```powershell
-git init
-git add .
-git commit -m "Initial commit: AI email action automation system"
-git branch -M main
+cd "C:\Users\showmik\Downloads"
+git clone https://github.com/SAHARIARSHOWMIK/ai-email-action-automation.git ai-email-action-automation-update
 ```
 
-Create an empty GitHub repository named:
-
-```text
-ai-email-action-automation
-```
-
-Do not add a README, license, or gitignore on GitHub because this project already has them.
-
-Then connect and push:
+### 3. Mirror the upgraded project into the clone
 
 ```powershell
-git remote add origin https://github.com/YOUR_GITHUB_USERNAME/ai-email-action-automation.git
-git push -u origin main
+$source = "C:\Users\showmik\Downloads\ai-email-action-automation-upgraded-final"
+$target = "C:\Users\showmik\Downloads\ai-email-action-automation-update"
+
+robocopy $source $target /MIR /XD ".git" ".venv" "node_modules" "dist" "__pycache__" ".pytest_cache" /XF ".env" "app.db" "token.json"
 ```
 
-Replace `YOUR_GITHUB_USERNAME` with your actual GitHub username.
+`robocopy` return codes from 0 through 7 indicate successful copying or normal file differences.
 
-## Upload using GitHub CLI
-
-If GitHub CLI is installed:
+### 4. Review and push one combined upgrade commit
 
 ```powershell
-gh auth login
-gh repo create ai-email-action-automation --public --source=. --remote=origin --push
+cd "C:\Users\showmik\Downloads\ai-email-action-automation-update"
+
+git status
+git add -A
+git commit -m "Upgrade email automation platform and React operations console"
+git push origin main
 ```
 
-## After pushing
+This sends all added, modified, renamed, and removed files in one commit to the same repository.
 
-1. Open the repository on GitHub.
-2. Check that screenshots show correctly in README.
-3. Go to the **Actions** tab and confirm the test workflow runs.
-4. Add these repository topics:
+## Verify after pushing
+
+Open:
 
 ```text
-ai-automation
-fastapi
-streamlit
-email-automation
-human-in-the-loop
-workflow-automation
-gmail-api
-google-calendar-api
-llm
-python
+https://github.com/SAHARIARSHOWMIK/ai-email-action-automation
+https://github.com/SAHARIARSHOWMIK/ai-email-action-automation/actions
 ```
+
+Confirm that:
+
+- the new README and screenshots render;
+- `frontend/` is present;
+- the old `dashboard/` directory is removed;
+- the newest GitHub Actions run passes; and
+- `.env`, `app.db`, `.venv`, `node_modules`, and tokens are absent.
 
 ## Suggested repository description
 
 ```text
-Human-in-the-loop AI email automation system that analyzes emails, plans safe workflow actions, requires approval, executes actions, and stores audit logs.
+Human-in-the-loop AI email automation platform with a React operations console, FastAPI workflow engine, Gmail and Calendar integrations, approval gates, task tracking, analytics, and audit logs.
+```
+
+## Suggested topics
+
+```text
+ai-automation
+email-automation
+fastapi
+react
+typescript
+human-in-the-loop
+workflow-automation
+gmail-api
+google-calendar-api
+python
 ```

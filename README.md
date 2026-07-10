@@ -1,301 +1,474 @@
-# 📬 AI Email-to-Action Automation System
+# MailPilot AI — Email-to-Action Automation Platform
 
-![Python](https://img.shields.io/badge/Python-3.12-blue?logo=python&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688?logo=fastapi&logoColor=white)
-![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-FF4B4B?logo=streamlit&logoColor=white)
-![SQLite](https://img.shields.io/badge/SQLite-Demo%20DB-003B57?logo=sqlite&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Ready-336791?logo=postgresql&logoColor=white)
+![React](https://img.shields.io/badge/React-TypeScript-61DAFB?logo=react&logoColor=111827)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Production%20Ready-4169E1?logo=postgresql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
-![Tests](https://img.shields.io/badge/Tests-33%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/Backend%20Tests-39%20passing-brightgreen)
+![CI](https://img.shields.io/badge/CI-Backend%20%2B%20Frontend-6f42c1)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-> A human-in-the-loop AI automation system that reads emails, analyzes intent, plans safe workflow actions, routes them for approval, and executes approved actions with a complete audit trail.
-
-This is not a simple chatbot demo. It is a production-style **AI workflow automation project** built around a realistic business process:
+> A human-in-the-loop operations platform that turns business emails into controlled drafts, calendar events, tasks, and escalations—without allowing AI to take external action on its own.
 
 ```text
-Email → AI analysis → action planning → human approval → execution → audit log
+Email ingestion → structured AI analysis → action planning → human approval → execution → audit trail
 ```
 
-The system runs fully in **demo mode** with 8 sample emails, mock AI analysis, mock execution, SQLite, and zero external credentials. It is also structured for real Gmail, Google Calendar, Anthropic Claude, PostgreSQL, Docker, and CI testing.
+MailPilot AI is designed as an internal business automation system rather than a “paste an email into a chatbot” demo. It provides a traceable inbox, schema-validated analysis, an approval gate, operational tasks, execution history, service health, and an immutable workflow audit trail.
+
+The repository runs end to end in **demo mode with no external credentials**. Optional adapters are included for Gmail, Google Calendar, Anthropic Claude, and PostgreSQL.
 
 ---
 
-## Why this project matters
+## Why this project exists
 
-Most email automation tools either stop at classification or perform risky actions automatically. This project uses a safer pattern:
+Business inboxes contain meetings, deadlines, complaints, invoice follow-ups, internal updates, and low-value noise. Processing them manually is repetitive, while fully autonomous AI creates unacceptable operational risk.
 
-> **AI recommends. Human approves. System executes. Everything is logged.**
+MailPilot AI applies a safer operating model:
 
-That makes it suitable for real business workflows where the AI should support decisions, not silently send emails or create calendar events without review.
+> **AI recommends. A human decides. The platform executes. Every transition is recorded.**
+
+This design demonstrates AI automation engineering, backend workflow orchestration, full-stack product development, external service integration, safety controls, testing, and CI/CD.
 
 ---
 
-## Core capabilities
+## Product capabilities
 
-| Area | What the system does |
+| Area | Capability |
 |---|---|
-| Email ingestion | Syncs unread emails from Gmail or built-in demo emails |
-| AI analysis | Classifies intent, priority, confidence, action type, deadlines, and meeting details |
-| Action planning | Converts analysis into structured workflow actions |
-| Human approval | Requires approval before any action can execute |
-| Safe execution | Creates mock/real Gmail drafts, calendar events, internal tasks, or escalations |
-| Auditability | Logs sync, analysis, planning, approval, rejection, execution, and failure events |
-| Dashboard | Streamlit interface for emails, approval queue, execution history, and audit logs |
-| API | FastAPI backend with Swagger documentation |
-| Testing | 33 automated tests covering planner rules, schemas, API workflow, and demo analysis |
-| Deployment | Docker and docker-compose support included |
+| Smart inbox | Sync demo or Gmail messages into a searchable operational inbox |
+| Structured analysis | Extract intent, priority, confidence, dates, meeting details, reply needs, and recommended action |
+| Workflow planning | Translate analysis into typed actions with validated payloads |
+| Approval queue | Edit, approve, reject, inspect, or execute proposed work |
+| Safe execution | Create Gmail drafts, calendar events, internal tasks, escalations, or intentionally ignored outcomes |
+| Task workspace | Track operational tasks generated from approved emails and mark them complete or reopen them |
+| Operations analytics | Monitor analysis rate, automation rate, action mix, intent distribution, open work, and recent activity |
+| Execution history | Review completed, failed, approved, rejected, and pending actions |
+| Audit trail | Filter and inspect every significant workflow transition |
+| Integration health | View demo/live provider mode, database health, safety boundaries, and deployment status |
+| Demo bootstrap | Load the complete seeded workflow from one button without auto-approving any action |
+| API platform | Use documented FastAPI endpoints independently of the React interface |
 
 ---
 
 ## Screenshots
 
-### Dashboard Overview
-![Dashboard Overview](docs/screenshots/01_dashboard_home_after_workflow.png)
+All screenshots below were captured from the running application with seeded workflow data.
 
-### Email Analysis and Action Planning
-![Email Analysis](docs/screenshots/02_email_analysis_kickoff.png)
+### Operations overview
 
-### Human Approval Queue
-![Approval Queue](docs/screenshots/03_approval_queue_pending_actions.png)
+![Operations overview](docs/screenshots/01_operations_overview.png)
 
-### Execution History
-![Execution History](docs/screenshots/04_execution_history_results.png)
+### Smart inbox and structured AI analysis
 
-### Audit Log
-![Audit Log](docs/screenshots/05_audit_log_trace.png)
+![Smart inbox](docs/screenshots/02_smart_inbox.png)
 
-### FastAPI Swagger Documentation
-![FastAPI Swagger Docs](docs/screenshots/06_fastapi_swagger_docs.png)
+### Human approval queue
+
+![Approval queue](docs/screenshots/03_approval_queue.png)
+
+### Internal task workspace
+
+![Task workspace](docs/screenshots/04_task_workspace.png)
+
+### Execution history
+
+![Execution history](docs/screenshots/05_execution_history.png)
+
+### Audit trail
+
+![Audit trail](docs/screenshots/06_audit_trail.png)
+
+### Integrations and safety controls
+
+![Integrations and safety](docs/screenshots/07_integrations_safety.png)
+
+---
+
+## End-to-end workflow
+
+1. **Sync** — ingest unread Gmail messages or eight deterministic sample emails.
+2. **Analyze** — generate a schema-validated analysis record for each email.
+3. **Plan** — map the analysis into one or more typed workflow actions.
+4. **Review** — allow a human to inspect and edit the proposed payload.
+5. **Approve or reject** — enforce an explicit decision before execution.
+6. **Execute** — invoke the configured Gmail, Calendar, task, escalation, or ignore provider.
+7. **Track** — store execution results, internal tasks, metrics, and audit events.
+
+The one-click **Load complete demo workflow** operation performs sync, analysis, and planning only. It deliberately does not approve or execute actions.
 
 ---
 
 ## Architecture
 
 ```mermaid
-flowchart TD
-    A[Gmail or Demo Emails] --> B[Email Sync Service]
-    B --> C[FastAPI Backend]
-    C --> D[(SQLite / PostgreSQL)]
-    C --> E[AI Analysis Service]
-    E --> F[Workflow Planner]
-    F --> G[Human Approval Dashboard]
-    G --> H[Execution Service]
-    H --> I[Gmail Draft]
-    H --> J[Calendar Event]
-    H --> K[Internal Task]
-    H --> L[Escalation]
-    C --> M[Audit Log]
-    F --> M
-    H --> M
-    M --> D
+flowchart LR
+    A[Gmail / Demo Inbox] --> B[Email Sync Service]
+    B --> C[(SQL Database)]
+    C --> D[Structured AI Analyzer]
+    D --> E[Action Planner]
+    E --> F[Human Approval Queue]
+    F -->|Approve| G[Execution Service]
+    F -->|Reject| H[Rejected Outcome]
+    G --> I[Gmail Draft]
+    G --> J[Calendar Event]
+    G --> K[Internal Task]
+    G --> L[Escalation]
+    G --> M[Ignored Outcome]
+    B --> N[Audit Service]
+    D --> N
+    E --> N
+    F --> N
+    G --> N
+    N --> C
+    C --> O[FastAPI API]
+    O --> P[React Operations Console]
 ```
 
-### Main components
+### Main modules
 
-| Component | Responsibility |
+| Path | Responsibility |
 |---|---|
-| `app/main.py` | FastAPI application entry point |
-| `app/routers/` | API routes for emails, analysis, actions, and dashboard metrics |
-| `app/services/email_sync.py` | Email ingestion and duplicate prevention |
-| `app/services/ai_analysis.py` | Structured AI analysis service |
-| `app/services/mock_analyzer.py` | Demo-mode analyzer that works without API keys |
-| `app/services/action_planner.py` | Rule engine that creates proposed workflow actions |
-| `app/services/approval.py` | Approval, rejection, editing, and state transitions |
-| `app/services/execution.py` | Executes approved actions safely |
-| `app/services/audit.py` | Writes traceable audit events |
-| `dashboard/app.py` | Streamlit dashboard |
-| `tests/` | Unit and integration tests |
+| `app/main.py` | FastAPI entry point, CORS, health check, and router registration |
+| `app/models.py` | Email, analysis, action, task, and audit persistence models |
+| `app/routers/emails.py` | Email sync, list, filtering, and detail APIs |
+| `app/routers/analysis.py` | Structured analysis APIs |
+| `app/routers/actions.py` | Planning, editing, approval, rejection, and execution APIs |
+| `app/routers/tasks.py` | Internal task listing and lifecycle APIs |
+| `app/routers/dashboard.py` | Operational metrics, overview analytics, and audit APIs |
+| `app/routers/demo.py` | Safe idempotent demo bootstrap workflow |
+| `app/services/` | Gmail, Calendar, analysis, planning, approval, execution, and audit services |
+| `frontend/src/pages/` | React operations console pages |
+| `tests/` | Unit and API integration coverage |
 
 ---
 
-## Tech stack
+## Technology stack
 
-| Layer | Tools |
+| Layer | Technology |
 |---|---|
-| Backend | FastAPI, SQLAlchemy, Pydantic |
-| Dashboard | Streamlit |
-| Database | SQLite for local/demo, PostgreSQL-ready for production |
-| AI | Anthropic Claude integration + mock analyzer for demo mode |
-| Integrations | Gmail API, Google Calendar API |
-| Testing | pytest, FastAPI TestClient |
-| DevOps | Docker, docker-compose, GitHub Actions |
+| Frontend | React 19, TypeScript, Vite, React Router, Recharts, Lucide icons |
+| Backend | Python 3.12, FastAPI, SQLAlchemy, Pydantic |
+| Local database | SQLite |
+| Container database | PostgreSQL 16 |
+| AI provider | Anthropic Claude adapter plus deterministic mock analyzer |
+| Email integration | Gmail API adapter plus deterministic demo provider |
+| Calendar integration | Google Calendar API adapter plus deterministic demo provider |
+| Testing | pytest, FastAPI TestClient, TypeScript compiler, Vite build |
+| DevOps | Docker, Docker Compose, Nginx, GitHub Actions |
+
+---
+
+## Repository structure
+
+```text
+ai-email-action-automation/
+├── app/
+│   ├── routers/
+│   ├── schemas/
+│   ├── services/
+│   ├── config.py
+│   ├── database.py
+│   ├── main.py
+│   └── models.py
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── api.ts
+│   │   ├── App.tsx
+│   │   └── styles.css
+│   ├── Dockerfile
+│   ├── nginx.conf
+│   ├── package.json
+│   └── vite.config.ts
+├── tests/
+├── docs/
+│   ├── screenshots/
+│   └── DEPLOYMENT.md
+├── .github/workflows/tests.yml
+├── docker-compose.yml
+├── setup_windows.bat
+├── start_backend.bat
+├── start_frontend.bat
+├── run_tests.bat
+└── requirements.txt
+```
 
 ---
 
 ## Quick start on Windows
 
-Use **Python 3.12**. Python 3.13 is not recommended for this project because one pinned dependency may fail during installation.
+### Requirements
 
-First-time setup:
+- Python **3.12 or newer**
+- Node.js **20 or newer**
+- Internet access during the first dependency installation
 
-```text
-Double-click setup_windows.bat
-```
+### First-time setup
 
-Then run the app:
-
-```text
-1. Double-click start_backend.bat
-2. Double-click start_dashboard.bat
-```
-
-Open:
+Extract the repository and double-click:
 
 ```text
-Dashboard: http://localhost:8501
-API docs:  http://localhost:8000/docs
+setup_windows.bat
 ```
+
+The script:
+
+- creates `.venv` inside the project folder;
+- installs backend dependencies;
+- installs frontend dependencies;
+- creates `.env` from `.env.example` when missing;
+- runs all backend tests; and
+- validates the React production build.
+
+### Start the platform
+
+Open the backend in one terminal window:
+
+```text
+start_backend.bat
+```
+
+Open the frontend in a second terminal window:
+
+```text
+start_frontend.bat
+```
+
+Then visit:
+
+```text
+Operations console: http://localhost:5173
+API documentation:  http://localhost:8000/docs
+Health endpoint:     http://localhost:8000/health
+```
+
+### Load the complete workflow
+
+On the Overview page, click:
+
+```text
+Load complete demo workflow
+```
+
+The platform will sync eight sample emails, analyze unprocessed messages, and create proposed actions. Continue through **Smart Inbox**, **Approval Queue**, **Tasks**, **Execution History**, and **Audit Trail**.
 
 ---
 
-## Manual local setup
+## Manual development setup
 
 ```bash
-git clone https://github.com/YOUR_GITHUB_USERNAME/ai-email-action-automation.git
+git clone https://github.com/SAHARIARSHOWMIK/ai-email-action-automation.git
 cd ai-email-action-automation
 
 python -m venv .venv
-source .venv/bin/activate        # Windows PowerShell: .venv\Scripts\Activate.ps1
+```
 
+Activate the environment:
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+Install and start the backend:
+
+```powershell
+python -m pip install --upgrade pip
 pip install -r requirements.txt
-cp .env.example .env              # Windows: copy .env.example .env
-
+copy .env.example .env
+$env:PYTHONPATH = (Get-Location).Path
 uvicorn app.main:app --reload
 ```
 
-In a second terminal:
+In a second terminal, start the frontend:
 
-```bash
-source .venv/bin/activate        # Windows PowerShell: .venv\Scripts\Activate.ps1
-pip install -r dashboard/requirements.txt
-streamlit run dashboard/app.py
+```powershell
+cd frontend
+npm install
+npm run dev
 ```
 
 ---
 
-## Demo workflow
-
-After opening the dashboard:
-
-1. Go to **Emails**.
-2. Click **Sync Emails** to load 8 sample emails.
-3. Select the kickoff meeting email.
-4. Click **Analyze this email**.
-5. Click **Plan action(s) for this email**.
-6. Go to **Approval Queue**.
-7. Approve and execute the proposed action.
-8. Review **Execution History** and **Audit Log**.
-
----
-
-## API endpoints
+## API overview
 
 | Method | Endpoint | Purpose |
 |---|---|---|
-| `GET` | `/health` | Check app, database, and demo-mode status |
-| `POST` | `/emails/sync` | Sync Gmail/demo emails |
-| `GET` | `/emails` | List synced emails |
-| `GET` | `/emails/{id}` | View one email and its analysis |
-| `POST` | `/emails/{id}/analyze` | Run AI analysis |
-| `GET` | `/emails/{id}/analysis` | Retrieve saved analysis |
-| `POST` | `/emails/{id}/plan` | Create proposed action(s) |
-| `GET` | `/actions` | List workflow actions |
-| `GET` | `/actions/{id}` | View one action |
-| `PATCH` | `/actions/{id}` | Edit pending action payload |
+| `GET` | `/health` | Database, environment, and demo-mode health |
+| `POST` | `/demo/bootstrap` | Idempotently sync, analyze, and plan the demo workflow |
+| `POST` | `/emails/sync` | Sync Gmail or sample emails |
+| `GET` | `/emails` | Filter and list emails |
+| `GET` | `/emails/{id}` | Retrieve an email with its analysis and actions |
+| `POST` | `/emails/{id}/analyze` | Analyze one email |
+| `GET` | `/emails/{id}/analysis` | Retrieve the stored analysis |
+| `POST` | `/emails/{id}/plan` | Plan workflow actions |
+| `GET` | `/actions` | Filter and list actions |
+| `GET` | `/actions/{id}` | Retrieve one action |
+| `PATCH` | `/actions/{id}` | Edit a pending action payload |
 | `POST` | `/actions/{id}/approve` | Approve an action |
 | `POST` | `/actions/{id}/reject` | Reject an action |
 | `POST` | `/actions/{id}/execute` | Execute an approved action |
-| `GET` | `/dashboard/metrics` | Dashboard metrics |
-| `GET` | `/audit-logs` | Audit trail |
+| `GET` | `/tasks` | Filter and list internal tasks |
+| `POST` | `/tasks/{id}/complete` | Complete an internal task |
+| `POST` | `/tasks/{id}/reopen` | Reopen an internal task |
+| `GET` | `/dashboard/metrics` | Compact operational metrics |
+| `GET` | `/dashboard/overview` | Aggregated dashboard analytics and recent activity |
+| `GET` | `/audit-logs` | Filter the complete audit trail |
 
-Interactive documentation is available at:
-
-```text
-http://localhost:8000/docs
-```
-
----
-
-## Safety design
-
-- The system **never sends emails automatically**.
-- Gmail actions create **drafts**, not sent messages.
-- Actions must be approved before execution.
-- Low-confidence AI output is escalated to human review.
-- Unclear meeting requests create clarification drafts instead of calendar events.
-- Demo mode works without Gmail, Calendar, or AI credentials.
-- `.env`, `token.json`, local database files, and virtual environments are ignored by Git.
+Interactive OpenAPI documentation is available at `http://localhost:8000/docs`.
 
 ---
 
-## Testing
+## Safety model
 
-Run:
+- No proposed action can execute before approval.
+- Gmail execution creates a **draft** rather than sending an email automatically.
+- Proposed payloads can be inspected and edited before approval.
+- Low-confidence or high-risk cases can be escalated for manual handling.
+- The demo bootstrap never approves or executes actions.
+- Credentials are stored in `.env`, which is excluded from Git.
+- `token.json`, database files, build output, caches, and virtual environments are excluded from Git.
+- Every significant workflow transition creates an audit record.
 
-```bash
-pytest -v
+---
+
+## Demo mode and live integrations
+
+The default `.env.example` uses:
+
+```env
+DEMO_MODE=true
+DATABASE_URL=sqlite:///./app.db
 ```
 
-Current verified test result:
+This mode uses deterministic local Gmail, AI, Calendar, and execution providers.
+
+To configure live providers, set `DEMO_MODE=false` and supply the required Google OAuth and Anthropic values in `.env`. Never commit the `.env` file or OAuth token file.
+
+The live integration adapters are included, but production OAuth consent, Google Cloud configuration, secret management, and provider account approval remain deployment responsibilities.
+
+---
+
+## Testing and quality checks
+
+Run all local checks on Windows:
 
 ```text
-33 passed
+run_tests.bat
+```
+
+Or run them manually:
+
+```powershell
+$env:PYTHONPATH = (Get-Location).Path
+pytest -q
+
+cd frontend
+npm run lint
+npm run build
+```
+
+Verified result for this version:
+
+```text
+39 passed
+TypeScript check passed
+Vite production build passed
 ```
 
 The test suite covers:
 
-- email sync and duplicate prevention
-- mock analyzer behavior across demo emails
-- schema validation
-- action planning rules
-- approval workflow
-- execution blocking before approval
-- full API workflow integration
+- duplicate-safe email ingestion;
+- mock analyzer classification and extraction;
+- schema and confidence validation;
+- action planning rules;
+- approval, rejection, editing, and execution boundaries;
+- internal task completion and reopening;
+- demo bootstrap idempotency;
+- dashboard overview aggregation;
+- audit-log filtering; and
+- full API workflow behavior.
 
 ---
 
-## Docker
+## Continuous integration
+
+`.github/workflows/tests.yml` runs on pushes and pull requests to `main`.
+
+The workflow independently verifies:
+
+1. backend dependency installation;
+2. application import and startup contract;
+3. all pytest tests;
+4. frontend dependency installation;
+5. TypeScript validation; and
+6. the Vite production build.
+
+---
+
+## Docker deployment
+
+Start the PostgreSQL database, FastAPI backend, and Nginx-served React frontend:
 
 ```bash
 docker compose up --build
 ```
 
-This starts the backend, dashboard, and database stack. See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) for deployment notes.
+Open:
+
+```text
+Frontend: http://localhost:8080
+Backend:  http://localhost:8000
+API docs: http://localhost:8000/docs
+```
+
+Docker Compose uses PostgreSQL for persistence and service health checks before starting dependent services.
+
+See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) for environment and deployment notes.
 
 ---
 
-## Real Gmail / Calendar / Claude configuration
+## Upgrade highlights
 
-The project runs in demo mode by default. To connect real services, update `.env`:
+This repository was upgraded from a basic Streamlit interface into a full React operations console while preserving the tested FastAPI workflow engine.
 
-```env
-DEMO_MODE=false
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-ANTHROPIC_API_KEY=your_anthropic_api_key
-```
+Major changes include:
 
-Use a **test Gmail account**, not a personal mailbox, while developing.
+- responsive React and TypeScript frontend;
+- operations overview with charts and workflow metrics;
+- split-pane smart inbox;
+- editable approval queue;
+- internal task lifecycle;
+- execution and audit workspaces;
+- integration-health and safety view;
+- one-click, idempotent demo bootstrap;
+- expanded backend APIs and test coverage; and
+- separate frontend/backend CI jobs and production containers.
+
+---
+
+## Limitations
+
+- Authentication and multi-tenant user management are not included in this portfolio release.
+- Demo-mode analysis is deterministic and is not a substitute for evaluating a production LLM on organization-specific data.
+- Live Google OAuth setup requires your own Google Cloud project and credentials.
+- The application intentionally creates Gmail drafts and does not autonomously send email.
+- Production deployments should add managed secret storage, database migrations, HTTPS, monitoring, backups, rate limiting, and organization-specific access controls.
 
 ---
 
 ## Resume-ready summary
 
-```text
-Built a human-in-the-loop AI email automation system using FastAPI, Streamlit,
-SQLAlchemy, Gmail API, Google Calendar API, and structured LLM analysis.
+**AI Email Action Automation | Python, FastAPI, React, TypeScript, SQLAlchemy, PostgreSQL, Gmail/Calendar APIs, LLMs, Docker**
 
-Designed a safe workflow engine that classifies emails, extracts action items,
-plans Gmail draft/calendar/task/escalation actions, requires human approval, and
-records every step in an audit log.
-
-Implemented demo mode, SQLite/PostgreSQL support, Docker deployment, Swagger API
-documentation, CI-ready tests, and a recruiter-friendly dashboard with screenshots.
-```
+- Built a human-in-the-loop email automation platform that converts business messages into structured Gmail drafts, calendar events, internal tasks, escalations, and traceable execution outcomes.
+- Developed a React operations console and FastAPI workflow engine with schema-validated AI analysis, editable approval gates, task tracking, operational analytics, provider health, and complete audit logs.
+- Implemented deterministic demo providers, optional Gmail/Calendar/Anthropic integrations, PostgreSQL deployment, Docker Compose, and automated backend/frontend CI verification.
 
 ---
 
 ## License
 
-MIT License. See [`LICENSE`](LICENSE).
+Released under the [MIT License](LICENSE).

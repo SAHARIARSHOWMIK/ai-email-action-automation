@@ -157,6 +157,11 @@ class TaskOut(BaseModel):
     created_at: datetime
 
 
+class TaskDecisionResponse(BaseModel):
+    task: TaskOut
+    message: str
+
+
 # ---------------------------------------------------------------------------
 # Dashboard metrics
 # ---------------------------------------------------------------------------
@@ -168,6 +173,40 @@ class DashboardMetrics(BaseModel):
     approved_actions: int
     executed_actions: int
     escalated_emails: int
+
+
+class ActivityItem(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    event_type: str
+    message: str
+    related_email_id: Optional[int] = None
+    related_action_id: Optional[int] = None
+    created_at: datetime
+
+
+class DashboardOverview(BaseModel):
+    metrics: DashboardMetrics
+    analysis_rate: float
+    completion_rate: float
+    automation_rate: float
+    average_confidence: float
+    high_priority_emails: int
+    open_tasks: int
+    intent_distribution: dict[str, int]
+    priority_distribution: dict[str, int]
+    action_status_distribution: dict[str, int]
+    action_type_distribution: dict[str, int]
+    recent_activity: list[ActivityItem]
+
+
+class DemoBootstrapResult(BaseModel):
+    emails_total: int
+    emails_added: int
+    emails_analyzed: int
+    actions_created: int
+    message: str
 
 
 # ---------------------------------------------------------------------------

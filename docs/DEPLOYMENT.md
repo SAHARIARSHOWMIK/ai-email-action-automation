@@ -1,118 +1,70 @@
 # Deployment Guide
 
-This project can run three ways:
+## Local development
 
-1. **Local, no Docker** - `uvicorn` + `streamlit run`, SQLite (see main README).
-2. **Local, Docker Compose** - full stack with PostgreSQL (this doc, section 1).
-3. **Cloud demo** - backend + dashboard deployed separately, demo mode only (this doc, section 2).
+Backend:
 
----
+```bash
+python -m venv .venv
+# Windows: .venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+copy .env.example .env
+uvicorn app.main:app --reload
+```
 
-## 1. Local stack with Docker Compose
+Frontend:
 
-This brings up PostgreSQL, the FastAPI backend, and the Streamlit dashboard
-together.
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Open `http://localhost:5173`. The development frontend calls the API at `http://localhost:8000` unless `VITE_API_BASE_URL` is supplied.
+
+## Docker Compose
 
 ```bash
 docker compose up --build
 ```
 
-- Dashboard: http://localhost:8501
-- API docs (Swagger): http://localhost:8000/docs
-- Health check: http://localhost:8000/health
+Services:
 
-By default `DEMO_MODE=true`, so the stack works immediately with **no
-credentials** - sample emails, mock AI analysis, and mock execution are used.
+- React/Nginx frontend: `http://localhost:8080`
+- FastAPI backend: `http://localhost:8000`
+- OpenAPI docs: `http://localhost:8000/docs`
+- PostgreSQL: internal Compose network, persistent `pgdata` volume
 
-### Running against real Gmail / Calendar / Anthropic
+The frontend Nginx configuration proxies `/api/` requests to the backend container. The compiled frontend uses `/api` as its production API base.
 
-Create a `.env` file in the project root (docker compose loads it
-automatically):
+## Environment variables
 
-```env
-DEMO_MODE=false
-GOOGLE_CLIENT_ID=your-client-id
-GOOGLE_CLIENT_SECRET=your-client-secret
-ANTHROPIC_API_KEY=sk-ant-...
-```
+Start from `.env.example`. Required live-provider values include:
 
-> **Gmail OAuth note:** the first Gmail sync triggers an interactive OAuth
-> consent flow (a browser window opens for login). This only works when
-> running the backend **locally** (not inside a headless container or a
-> cloud host), and should only ever be pointed at a **test Gmail account**,
-> never your personal mailbox. For this reason, `DEMO_MODE=false` is intended
-> for local development/demo only - the hosted cloud demo (below) always runs
-> in demo mode.
+- `DEMO_MODE=false`
+- `GOOGLE_CLIENT_ID`
+- `GOOGLE_CLIENT_SECRET`
+- `GOOGLE_REDIRECT_URI`
+- `ANTHROPIC_API_KEY`
+- `ANTHROPIC_MODEL`
 
----
+Never commit `.env`, OAuth tokens, or secret JSON files.
 
-## 2. Cloud demo deployment
+## Production hardening
 
-The cloud demo deploys the backend and dashboard as **separate services**,
-both running in `DEMO_MODE=true` with sample data. No Gmail or Anthropic
-credentials are used in the cloud deployment.
+Before production use:
 
-### 2.1 Database
+1. Add identity, authentication, authorization, and tenant boundaries.
+2. Store secrets in a managed secret service.
+3. Use managed PostgreSQL with migrations and automated backups.
+4. Put the frontend and API behind HTTPS and a reverse proxy/load balancer.
+5. Restrict CORS to the production frontend origin.
+6. Add request rate limiting and abuse protection.
+7. Add centralized logs, traces, metrics, and alerts.
+8. Configure provider OAuth consent and token rotation.
+9. Define data retention and deletion policies for email content.
+10. Run dependency, container, and application security scanning.
 
-Use any managed PostgreSQL provider (Render, Railway, Supabase, Neon, etc.).
-Copy the connection string - it will look like:
+## CI
 
-```text
-postgresql://user:password@host:5432/dbname
-```
-
-### 2.2 Backend (FastAPI)
-
-Deploy the root `Dockerfile` to a container platform (Render, Railway, Fly.io,
-etc.) with these environment variables:
-
-| Variable | Value |
-| --- | --- |
-| `ENV` | `production` |
-| `DEMO_MODE` | `true` |
-| `DATABASE_URL` | your managed Postgres connection string |
-| `CONFIDENCE_THRESHOLD` | `0.75` |
-
-The container listens on port `8000` and exposes:
-- `GET /health` - use this as the platform's health check
-- `GET /docs` - interactive API documentation
-- `POST /emails/sync` - seeds the 8 demo emails on first call
-
-### 2.3 Dashboard (Streamlit)
-
-Deploy `dashboard/Dockerfile` (build context = project root) to the same or a
-different platform, with:
-
-| Variable | Value |
-| --- | --- |
-| `API_BASE_URL` | the public URL of the backend deployed in 2.2 |
-
-The container listens on port `8501`.
-
-### 2.4 Seeding the demo
-
-After both services are live, open the dashboard and click **Sync Emails**
-on the Emails page (or call `POST /emails/sync` on the backend directly).
-This loads the 8 sample emails covering every supported intent, so a visitor
-can immediately analyze, plan, approve, and execute actions.
-
-### 2.5 Add the links to the README
-
-Once deployed, add both URLs to the **Cloud demo** section of the main
-`README.md`:
-
-```markdown
-## Live demo
-- Dashboard: https://your-dashboard-url
-- API docs: https://your-backend-url/docs
-```
-
----
-
-## Summary of safety guarantees in any deployment
-
-- The cloud demo never holds real Gmail/Calendar/Anthropic credentials.
-- `DEMO_MODE=false` (real Gmail/Calendar/AI) is local-only, due to the
-  interactive OAuth flow and to avoid exposing personal mailbox access.
-- No action ever runs without explicit human approval, regardless of mode
-  (enforced in `app/services/approval.py`).
+GitHub Actions verifies the backend test suite and React production build on pushes and pull requests to `main`.

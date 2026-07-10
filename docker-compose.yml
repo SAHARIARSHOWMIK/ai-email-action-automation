@@ -1,18 +1,3 @@
-# Full local stack: PostgreSQL + FastAPI backend + Streamlit dashboard.
-#
-# Quick start (no credentials needed - runs in demo mode):
-#   docker compose up --build
-#
-# Then open:
-#   Dashboard: http://localhost:8501
-#   API docs:  http://localhost:8000/docs
-#
-# To run against real Gmail/Calendar/Anthropic, set DEMO_MODE=false and
-# provide GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, and ANTHROPIC_API_KEY
-# below (or via a .env file - docker compose loads .env automatically).
-# NOTE: Gmail OAuth requires an interactive browser flow, so DEMO_MODE=false
-# is intended for local runs only, not the hosted/cloud demo.
-
 services:
   db:
     image: postgres:16-alpine
@@ -23,13 +8,11 @@ services:
       POSTGRES_DB: email_automation
     volumes:
       - pgdata:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U app"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
 
   backend:
     build:
@@ -52,18 +35,22 @@ services:
       ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-claude-sonnet-4-6}
     ports:
       - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
 
-  dashboard:
+  frontend:
     build:
       context: .
-      dockerfile: dashboard/Dockerfile
+      dockerfile: frontend/Dockerfile
     restart: unless-stopped
     depends_on:
-      - backend
-    environment:
-      API_BASE_URL: http://backend:8000
+      backend:
+        condition: service_healthy
     ports:
-      - "8501:8501"
+      - "8080:80"
 
 volumes:
   pgdata:

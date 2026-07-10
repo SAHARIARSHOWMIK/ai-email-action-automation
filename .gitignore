@@ -37,5 +37,11 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Streamlit
-.streamlit/secrets.toml
+# Frontend
+frontend/node_modules/
+frontend/dist/
+*.tsbuildinfo
+
+# Generated TypeScript configuration output
+frontend/vite.config.js
+frontend/vite.config.d.ts
